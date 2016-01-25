@@ -106,11 +106,9 @@ This is MSS SDK for python。
     mp.complete_upload()
 
 # handle image
-图片服务通过get_image_key()获取一个image key
-
-image key对象可以用来下载处理后的图片和生成presideUrl
-
-image_port和image_host对应图片服务器的port和host
+图片服务通过get_image_key()获取一个image key  
+image key对象可以用来下载处理后的图片和生成presideUrl  
+image_port和image_host对应图片服务器的port和host  
 
     import mssapi
     from mssapi.s3.connection import S3Connection
