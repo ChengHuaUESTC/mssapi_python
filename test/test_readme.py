@@ -3,10 +3,10 @@ from mssapi.s3.connection import S3Connection
 from mssapi.s3.key import Key
 
 conn = S3Connection(
-    aws_access_key_id = '0fd0e58515004a69bcd44454a3e75a92',
-    aws_secret_access_key = '532053aff97540048dcfdcb1b34cf643',
-    port = 6008,
-    host = '10.4.253.10',
+    aws_access_key_id = '68d3e9b0effa4974accc50ca04ec3bce',
+    aws_secret_access_key = 'b4a02742bfe74647a2bb1f1e8cbea75b',
+    port = 80,
+    host = "msstest.vip.sankuai.com"
 )
 
 b0=conn.create_bucket('tmpbucket0')

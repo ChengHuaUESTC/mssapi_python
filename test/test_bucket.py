@@ -4,7 +4,7 @@ import test_util
 import time
 
 conn = test_util.get_conn()
-b = conn.create_bucket('test_bucket_0')
+b = conn.create_bucket('test-bucket-0')
 
 #test new_key
 k0 = b.new_key('key_0')
@@ -23,7 +23,7 @@ for k in keys:
 test_util.assert_eq( i, 2, 'test get_all_keys' )
 
 #test copy_key
-b.copy_key('key_2', 'test_bucket_0', 'key_1')
+b.copy_key('key_2', 'test-bucket-0', 'key_1')
 k2 = b.lookup('key_2')
 test_util.assert_neq( k2, None, 'test copy_key' )
 
@@ -40,9 +40,9 @@ for k in ks:
 test_util.assert_true( ret, 'test list')
 
 #test list with prefix
-b.copy_key('aa/bb/cc/sub_key_0', 'test_bucket_0', 'key_1')
-b.copy_key('aa/bb/cc/sub_key_1', 'test_bucket_0', 'key_1')
-b.copy_key('aa/bb/dd/sub_key_3', 'test_bucket_0', 'key_1')
+b.copy_key('aa/bb/cc/sub_key_0', 'test-bucket-0', 'key_1')
+b.copy_key('aa/bb/cc/sub_key_1', 'test-bucket-0', 'key_1')
+b.copy_key('aa/bb/dd/sub_key_3', 'test-bucket-0', 'key_1')
 
 i = 0
 ks =  b.list(prefix = 'aa/bb/cc')
@@ -131,5 +131,5 @@ print b.get_acl()
 b.delete_key('key_1')
 b.delete_key('key_2')
 b.delete()
-b0 = conn.lookup('test_bucket_0')
+b0 = conn.lookup('test-bucket-0')
 test_util.assert_eq( b0, None, 'test delete_bucket' )

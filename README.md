@@ -104,3 +104,39 @@ This is MSS SDK for python。
         mp.upload_part_from_file(fp, part_num=i + 1)
 
     mp.complete_upload()
+
+# handle image
+图片服务通过get_image_key()获取一个image key，image key对象可以用来
+下载处理后的图片和生成presideUrl
+
+    import mssapi
+    from mssapi.s3.connection import S3Connection
+
+    conn = S3Connection(
+        aws_access_key_id = access_key,
+        aws_secret_access_key = access_secret,
+        port = port,
+        host = host,
+        image_port = image_port,
+        image_host = image_host,
+    )
+    
+创建桶并上传图片
+
+    b = conn.create_bucket('image-bucket')
+    k = b.new_key('example.jpg')
+    k.set_contents_from_filename('example.jpg')
+
+对图片旋转30度
+
+    process = '30r'
+    k1 = b.get_image_key('example.jpg', process)
+    k1.get_contents_to_filename("example_rotation.jpg")
+    print k1.generate_url(3600)
+
+给图片打水印
+
+    process = "watermark=2&text=aGVsbG8sIHdvcmxk"
+    k2 = b.get_image_key('example.jpg', process)
+    k2.get_contents_to_filename("example_water.jpg")
+    print k2.generate_url(3600)
