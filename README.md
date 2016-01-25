@@ -108,9 +108,13 @@ This is MSS SDK for python。
 # handle image
 图片服务通过get_image_key()获取一个image key，image key对象可以用来
 下载处理后的图片和生成presideUrl
+image_port和image_host对应图片服务器的port和host
 
     import mssapi
     from mssapi.s3.connection import S3Connection
+
+    image_port = 80 
+    image_host = 'image.mtmss.com'
 
     conn = S3Connection(
         aws_access_key_id = access_key,
