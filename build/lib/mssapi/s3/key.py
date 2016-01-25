@@ -98,7 +98,9 @@ class Key(object):
 
 
 
-    def __init__(self, bucket=None, name=None):
+    def __init__(self, bucket=None, name=None, process=None, is_image=False):
+        if process is not None:
+            name = str(name) + "@" + str(process)
         self.bucket = bucket
         self.name = name
         self.metadata = {}
@@ -129,6 +131,7 @@ class Key(object):
         self.ongoing_restore = None
         self.expiry_date = None
         self.local_hashes = {}
+        self.is_image = is_image
 
     def __repr__(self):
         if self.bucket:
@@ -240,10 +243,11 @@ class Key(object):
             self.mode = 'r'
 
             provider = self.bucket.connection.provider
+            # add for test
             self.resp = self.bucket.connection.make_request(
                 'GET', self.bucket.name, self.name, headers,
                 query_args=query_args,
-                override_num_retries=override_num_retries)
+                override_num_retries=override_num_retries, is_image=self.is_image)
             if self.resp.status < 199 or self.resp.status > 299:
                 body = self.resp.read()
                 raise provider.storage_response_error(self.resp.status,
@@ -555,7 +559,7 @@ class Key(object):
                                                    self.bucket.name, self.name,
                                                    headers, query_auth,
                                                    force_http,
-                                                   expires_in_absolute,)
+                                                   expires_in_absolute, self.is_image)
 
     def send_file(self, fp, headers=None, query_args=None, size=None):
         """
@@ -595,6 +599,8 @@ class Key(object):
             the default behaviour is to read all bytes from the file
             pointer. Less bytes may be available.
         """
+        if self.is_image:
+            raise MssapiClientError('Image Key Not Support Put Object')
 
         cb=None
         num_cb=10

@@ -167,6 +167,7 @@ class S3Connection(AWSAuthConnection):
 
     def __init__(self, aws_access_key_id=None, aws_secret_access_key=None,
                  is_secure=False, port=None, host=NoHostProvided,
+                 image_host=None, image_port=None,
                  calling_format=DefaultCallingFormat, path='/',
                  suppress_consec_slashes=True):
 
@@ -186,14 +187,22 @@ class S3Connection(AWSAuthConnection):
 
         no_host_provided = False
         if host is NoHostProvided:
-            no_host_provided = True
-            host = self.DefaultHost
+            if image_host is not None:
+                host = image_host
+            else:
+                no_host_provided = True
+                host = self.DefaultHost
 
         if isinstance(calling_format, six.string_types):
             calling_format=mssapi.utils.find_class(calling_format)()
         self.calling_format = calling_format
         self.bucket_class = bucket_class
         self.anon = anon
+        self.image_host = image_host
+        if image_port is not None:
+            self.image_port = image_port
+        else:
+            self.image_port = port
 
         super(S3Connection, self).__init__(host,
                 aws_access_key_id, aws_secret_access_key,
@@ -225,7 +234,7 @@ class S3Connection(AWSAuthConnection):
         return not (self.lookup(bucket_name) is None)
 
     def generate_url(self, expires_in, method, bucket='', key='', headers=None,
-                     query_auth=True, force_http=False, expires_in_absolute=False):
+                     query_auth=True, force_http=False, expires_in_absolute=False, is_image=False):
 
         version_id=None
         response_headers=None
@@ -281,9 +290,16 @@ class S3Connection(AWSAuthConnection):
             port = 80
         else:
             protocol = self.protocol
-            port = self.port
+            if is_image:
+                port = self.image_port
+            else:
+                port = self.port
+        if is_image:
+            host = self.image_host
+        else:
+            host = self.host
         return self.calling_format.build_url_base(self, protocol,
-                                                  self.server_name(port),
+                                                  self.server_name(port, host),
                                                   bucket, key) + query_part
 
     def get_all_buckets(self, headers=None):
@@ -483,7 +499,7 @@ class S3Connection(AWSAuthConnection):
 
     def make_request(self, method, bucket='', key='', headers=None, data='',
                      query_args=None, sender=None, override_num_retries=None,
-                     retry_handler=None):
+                     retry_handler=None, is_image=False):
         if isinstance(bucket, self.bucket_class):
             bucket = bucket.name
         if isinstance(key, Key):
@@ -492,7 +508,10 @@ class S3Connection(AWSAuthConnection):
         mssapi.log.debug('path=%s' % path)
         auth_path = self.calling_format.build_auth_path(bucket, key)
         mssapi.log.debug('auth_path=%s' % auth_path)
-        host = self.calling_format.build_host(self.server_name(), bucket)
+        if is_image:
+            host = self.calling_format.build_host(self.server_name(port=self.image_port, host=self.image_host), bucket)
+        else:
+            host = self.calling_format.build_host(self.server_name(), bucket)
         if query_args:
             path += '?' + query_args
             mssapi.log.debug('path=%s' % path)

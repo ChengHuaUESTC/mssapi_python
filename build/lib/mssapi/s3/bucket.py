@@ -122,6 +122,13 @@ class Bucket(object):
         """
         return self.get_key(key_name, headers=headers)
 
+    def get_image_key(self, key_name, process=None):
+        # This leans on the default behavior of ``new_key`` (not hitting
+        # the service). If that changes, that behavior should migrate here.
+        return self.new_key(key_name, process, is_image=True)
+
+
+
     def get_key(self, key_name, headers=None, validate=True):
         """
         Check to see if a particular key exists within the bucket.  This
@@ -372,7 +379,7 @@ class Bucket(object):
                               ('CommonPrefixes', Prefix)],
                              '', headers, **params)
 
-    def new_key(self, key_name=None):
+    def new_key(self, key_name=None, process=None, is_image=False):
         """
         Creates a new key
 
@@ -384,7 +391,7 @@ class Bucket(object):
         """
         if not key_name:
             raise ValueError('Empty key names are not allowed')
-        return self.key_class(self, key_name)
+        return self.key_class(self, key_name, process, is_image)
 
     def generate_url(self, expires_in, method='GET', headers=None,
                      force_http=False, expires_in_absolute=False):
@@ -763,7 +770,7 @@ class Bucket(object):
 #==================================================================================
 
 
-    '''
+
     def cancel_multipart_upload(self, key_name, upload_id, headers=None):
         """
         To verify that all parts have been removed, so you don't get charged
@@ -780,6 +787,7 @@ class Bucket(object):
             raise self.connection.provider.storage_response_error(
                 response.status, response.reason, body)
 
+    '''
     def get_all_multipart_uploads(self, headers=None, **params):
         """
         A lower-level, version-aware method for listing active

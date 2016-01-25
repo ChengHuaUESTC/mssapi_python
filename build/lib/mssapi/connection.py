@@ -539,7 +539,6 @@ class AWSAuthConnection(object):
         if (sys.version_info[0], sys.version_info[1]) >= (2, 6):
             # If timeout isn't defined in mssapi config file, use 70 second
             # default as recommended by
-            # http://docs.aws.amazon.com/amazonswf/latest/apireference/API_PollForActivityTask.html
             self.http_connection_kwargs['timeout'] = config.getint(
                 'Mssapi', 'http_socket_timeout', 70)
 
@@ -641,11 +640,13 @@ class AWSAuthConnection(object):
             path = path + params
         return path
 
-    def server_name(self, port=None):
+    def server_name(self, port=None, host=None):
         if not port:
             port = self.port
+        if not host:
+            host = self.host
         if port == 80:
-            signature_host = self.host
+            signature_host = host
         else:
             # This unfortunate little hack can be attributed to
             # a difference in the 2.6 version of http_client.  In old
@@ -656,9 +657,9 @@ class AWSAuthConnection(object):
             # it no longer does that.  Hence, this kludge.
             if ((ON_APP_ENGINE and sys.version[:3] == '2.5') or
                     sys.version[:3] in ('2.6', '2.7')) and port == 443:
-                signature_host = self.host
+                signature_host = host
             else:
-                signature_host = '%s:%d' % (self.host, port)
+                signature_host = '%s:%d' % (host, port)
         return signature_host
 
     def handle_proxy(self, proxy, proxy_port, proxy_user, proxy_pass):
