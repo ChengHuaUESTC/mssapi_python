@@ -30,16 +30,16 @@ print "\n"
 os.mkdir("pic")
 
 obj_name = "lena.jpg"
-process = "watermark=2&text=aGVsbG8sIHdvcmxk"
-k0 = Key(bucket, obj_name, process, is_image=True)
+action = "watermark=2&text=aGVsbG8sIHdvcmxk"
+k0 = Key(bucket, obj_name, action, is_image=True)
 k0.get_contents_to_filename("pic/lena_k0_water.jpg")
 print k0.generate_url(400)
 
 obj_name = "lena.jpg"
-process = "30r"
-k2 = bucket.get_image_key(obj_name, process)
+action = "30r"
+k2 = bucket.get_image_key(obj_name, action)
 k2.get_contents_to_filename("pic/lena_k2_30r.jpg")
 print k2.generate_url(300)
 
 files = os.listdir("pic")
-test_util.assert_eq( 2, len(files), 'test delete_bucket' )
+test_util.assert_eq( 2, len(files), 'test get_image_key' )

@@ -98,9 +98,9 @@ class Key(object):
 
 
 
-    def __init__(self, bucket=None, name=None, process=None, is_image=False):
-        if process is not None:
-            name = str(name) + "@" + str(process)
+    def __init__(self, bucket=None, name=None, action=None, is_image=False):
+        if action is not None:
+            name = str(name) + "@" + str(action)
         self.bucket = bucket
         self.name = name
         self.metadata = {}
